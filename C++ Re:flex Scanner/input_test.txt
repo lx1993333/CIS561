@@ -1,0 +1,6 @@
+"hello world"
+'cis'
+hello
+561
+"hello 561"
+"the quote of this should not be replaced'
