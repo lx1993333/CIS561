@@ -1,0 +1,33 @@
+<classes_def>{word} {yylval.str = strdup(text());cout<<yylval.str<<"             ";return parser::token::IDENT; }
+<classes_def>[(] {start(input_def);}
+
+
+
+<input_def>{word} {yylval.str = strdup(text());cout<<yylval.str<<"             ";return parser::token::IDENT; }
+<input_def>[:][\h*]{word}  {string s= text(); s.erase(0,1);yylval.str = strdup(s.c_str());cout<<yylval.str<<"             ";return parser::token::TYPECASE; }
+<input_def>[ \t\n]* {;}
+<input_def>[/][*]  { start(comment); }
+<input_def>[,] {;}
+<input_def>[)][:][\h*]{word}[\h*][{] {start(function_body);string s= text(); s.erase(0,1);yylval.str = strdup(s.c_str());cout<<yylval.str<<"             ";return parser::token::TYPECASE;}
+<input_def>[)][{] {start(class_body);}
+
+<class_body>[ \t\n]* {;}
+<class_body>[-+*/=]  { return text()[0]; }
+<class_body>[/][*]  { start(comment); }
+<class_body>this {yylval.str = strdup(text());cout<<yylval.str<<"             ";return parser::token::IDENT;}
+<class_body>{word} {yylval.str = strdup(text());cout<<yylval.str<<"             ";return parser::token::IDENT; }
+<class_body>[.]{word} {yylval.str = strdup(text());cout<<yylval.str<<"             ";return parser::token::IDENT; }
+<class_body>def {start(function_def);return parser::token::DEF;}
+<class_body>[}] {start(INITIAL);}
+
+
+<function_def>{word} {yylval.str = strdup(text());cout<<yylval.str<<"             ";return parser::token::IDENT; }
+<function_def>[(] {start(input_def);}
+<function_def>[/][*]  { start(comment); }
+
+<function_body>[ \t\n]* {;}
+<function_body>[/][*]  { start(comment); }
+<function_body>[-+*/=]  { return text()[0]; }
+<function_def>{word} {yylval.str = strdup(text());cout<<yylval.str<<"             ";return parser::token::IDENT; }
+<function_body>return {return parser::token::RETURN;}
+<function_body>[}] {start(class_body);}
