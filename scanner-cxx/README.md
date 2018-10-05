@@ -9,7 +9,7 @@ The outputs of this pragrom should be somethink like:
 
 CLASS	(258)	@1.1-2.0
 
-BadBreaks           IDENT	(273)	@2.0-5
+BadBreaks   IDENT	(273)	@2.0-5
 
 (	(40)	@2.6-14
 
