@@ -5,7 +5,7 @@ build instructions:
     just use given "Makefile" to build the program. (In shell environment(like terminal), run "make")
 
 After building, run "./lexer <the_path_to_your_input.txt>" to see the outputs. 
-The outputs of this pragrom should be somethink like:
+The outputs of this pragrom should be something like:
 
 CLASS	(258)	@1.1-2.0
 
