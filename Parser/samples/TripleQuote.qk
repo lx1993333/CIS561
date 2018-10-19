@@ -1,0 +1,9 @@
+/**
+ * A few challenges for the lexical analyzer
+ */
+
+class Challenge() {
+   z = """
+You can put all kinds of 
+crazy \z\a\.\""" + "stuff in a triple-quoted string"; 
+}

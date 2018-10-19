@@ -1,0 +1,88 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/xunliu/Desktop/CIS561 git/Parser/ASTNode.h
+string
+-
+sstream
+-
+vector
+-
+CodegenContext.h
+/Users/xunliu/Desktop/CIS561 git/Parser/CodegenContext.h
+EvalContext.h
+/Users/xunliu/Desktop/CIS561 git/Parser/EvalContext.h
+
+/Users/xunliu/Desktop/CIS561 git/Parser/CodegenContext.h
+ostream
+-
+
+/Users/xunliu/Desktop/CIS561 git/Parser/EvalContext.h
+unordered_map
+-
+
+/Users/xunliu/Desktop/CIS561 git/Parser/Messages.h
+location.hh
+/Users/xunliu/Desktop/CIS561 git/Parser/location.hh
+string
+-
+
+/Users/xunliu/Desktop/CIS561 git/Parser/lex.yy.h
+quack.tab.hxx
+/Users/xunliu/Desktop/CIS561 git/Parser/quack.tab.hxx
+Messages.h
+/Users/xunliu/Desktop/CIS561 git/Parser/Messages.h
+reflex/matcher.h
+-
+reflex/abslexer.h
+-
+
+/Users/xunliu/Desktop/CIS561 git/Parser/location.hh
+position.hh
+/Users/xunliu/Desktop/CIS561 git/Parser/position.hh
+
+/Users/xunliu/Desktop/CIS561 git/Parser/parser.cpp
+lex.yy.h
+/Users/xunliu/Desktop/CIS561 git/Parser/lex.yy.h
+ASTNode.h
+/Users/xunliu/Desktop/CIS561 git/Parser/ASTNode.h
+EvalContext.h
+/Users/xunliu/Desktop/CIS561 git/Parser/EvalContext.h
+Messages.h
+/Users/xunliu/Desktop/CIS561 git/Parser/Messages.h
+
+/Users/xunliu/Desktop/CIS561 git/Parser/position.hh
+algorithm
+-
+iostream
+-
+string
+-
+
+/Users/xunliu/Desktop/CIS561 git/Parser/quack.tab.hxx
+ASTNode.h
+/Users/xunliu/Desktop/CIS561 git/Parser/ASTNode.h
+cstdlib
+-
+iostream
+-
+stdexcept
+-
+string
+-
+vector
+-
+stack.hh
+/Users/xunliu/Desktop/CIS561 git/Parser/stack.hh
+location.hh
+/Users/xunliu/Desktop/CIS561 git/Parser/location.hh
+
+/Users/xunliu/Desktop/CIS561 git/Parser/stack.hh
+vector
+-
+

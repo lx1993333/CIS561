@@ -1,0 +1,4 @@
+/Users/xunliu/Desktop/CIS561 git/Parser/CMakeFiles/rebuild_cache.dir
+/Users/xunliu/Desktop/CIS561 git/Parser/CMakeFiles/edit_cache.dir
+/Users/xunliu/Desktop/CIS561 git/Parser/CMakeFiles/test_ast.dir
+/Users/xunliu/Desktop/CIS561 git/Parser/CMakeFiles/parser.dir

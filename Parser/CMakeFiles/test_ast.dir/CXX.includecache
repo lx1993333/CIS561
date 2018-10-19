@@ -1,0 +1,44 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/xunliu/Desktop/CIS561 git/Parser/ASTNode.cpp
+ASTNode.h
+/Users/xunliu/Desktop/CIS561 git/Parser/ASTNode.h
+
+/Users/xunliu/Desktop/CIS561 git/Parser/ASTNode.h
+string
+-
+sstream
+-
+vector
+-
+CodegenContext.h
+/Users/xunliu/Desktop/CIS561 git/Parser/CodegenContext.h
+EvalContext.h
+/Users/xunliu/Desktop/CIS561 git/Parser/EvalContext.h
+
+/Users/xunliu/Desktop/CIS561 git/Parser/CodegenContext.cpp
+CodegenContext.h
+/Users/xunliu/Desktop/CIS561 git/Parser/CodegenContext.h
+
+/Users/xunliu/Desktop/CIS561 git/Parser/CodegenContext.h
+ostream
+-
+
+/Users/xunliu/Desktop/CIS561 git/Parser/EvalContext.h
+unordered_map
+-
+
+/Users/xunliu/Desktop/CIS561 git/Parser/test_ast.cpp
+iostream
+-
+ASTNode.h
+/Users/xunliu/Desktop/CIS561 git/Parser/ASTNode.h
+EvalContext.h
+/Users/xunliu/Desktop/CIS561 git/Parser/EvalContext.h
+
