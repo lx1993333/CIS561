@@ -1,4 +1,4 @@
-#C++ (bison, re-flex) version of project 2, Parser
+#C++ (bison, re-flex) version of project 3, Parser and AST function added.
 
 build instructions: 
 * Make sure the path lead to include/reflex was added in the enviroment. (for C++, use 'export CPLUS_INCLUDE_PATH="$CPLUS_INCLUDE_PATH:/usr/local/include"')
