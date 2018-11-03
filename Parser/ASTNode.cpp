@@ -19,6 +19,24 @@ namespace AST {
     int Minus::eval(EvalContext &ctx) { return left_.eval(ctx) - right_.eval(ctx); }
 
     int Div::eval(EvalContext &ctx) { return left_.eval(ctx) / right_.eval(ctx); }
+    
+    int Large::eval(EvalContext &ctx) { return left_.eval(ctx) > right_.eval(ctx); }
+    
+    int Less::eval(EvalContext &ctx) { return left_.eval(ctx) < right_.eval(ctx); }
+    
+    int Atleast::eval(EvalContext &ctx) { return left_.eval(ctx) >= right_.eval(ctx); }
+    
+    int Atmost::eval(EvalContext &ctx) { return left_.eval(ctx) <= right_.eval(ctx); }
+    
+    int Equals::eval(EvalContext &ctx) { return left_.eval(ctx) == right_.eval(ctx); }
+    
+    int And::eval(EvalContext &ctx) { return left_.eval(ctx) & right_.eval(ctx); }
+    
+    int Or::eval(EvalContext &ctx) { return left_.eval(ctx) | right_.eval(ctx); }
+    
+    int Not::eval(EvalContext &ctx) { return left_.eval(ctx) != right_.eval(ctx); }
+    
+    int Neg::eval(EvalContext &ctx) { return -right_.eval(ctx); }
 
     // A block is evaluated just by evaluating each statement in the block.
     // We'll return the value_ of the last statement, although it is useless.
@@ -63,6 +81,65 @@ namespace AST {
         }
         return falsepart_.eval(ctx);
     }
+    
+    int While::eval(EvalContext &ctx) {
+        int cond = cond_.eval(ctx);
+        // Might as well use C's ill-considered interpretation of ints as booleans
+        if (cond) {
+            return block_.eval(ctx);
+        }
+        return 0;
+    }
+    
+    
+    int Class::eval(EvalContext &ctx){
+        return 0;
+    }
+    
+     
+    int Method::eval(EvalContext &ctx){
+        return 0;
+    }
+    
+    int Method_call::eval(EvalContext &ctx){
+        return 0;
+    }
+    
+    int Classes::eval(EvalContext &ctx){
+        return 0;
+    }
+    
+    int Argus::eval(EvalContext &ctx){
+        return 0;
+    }
+    
+    int Actuals::eval(EvalContext &ctx){
+        return 0;
+    }
+    
+    int Statement::eval(EvalContext &ctx){
+        return 0;
+    }
+    
+    int Return_opt::eval(EvalContext &ctx){
+        return 0;
+    }
+    
+    int Dot::eval(EvalContext &ctx){
+        return 0;
+    }
+    
+    int TypeExtend::eval(EvalContext &ctx){
+        return 0;
+    }
+    
+    int TypeCase::eval(EvalContext &ctx){
+        return 0;
+    }
+    
+    int Type_Alternatives::eval(EvalContext &ctx){
+        return 0;
+    }
 
     // JSON representation of all the concrete node types.
     // This might be particularly useful if I want to do some
@@ -100,6 +177,7 @@ namespace AST {
         json_indent(out, ctx);
         out << "\"" << field << "\" : ";
         child.json(out, ctx);
+        
         out << sep;
     }
 
@@ -133,7 +211,14 @@ namespace AST {
         json_child("falsepart_", falsepart_, out, ctx, ' ');
         json_close(out, ctx);
     }
-
+    
+    void While::json(std::ostream& out, AST_print_context& ctx) {
+        json_head("While", out, ctx);
+        json_child("cond_", cond_, out, ctx);
+        json_child("block_", block_, out, ctx);
+        json_close(out, ctx);
+    }
+    
     void Ident::json(std::ostream& out, AST_print_context& ctx) {
         json_head("Ident", out, ctx);
         out << "\"text_\" : \"" << text_ << "\"";
@@ -152,5 +237,110 @@ namespace AST {
         json_child("right_", right_, out, ctx, ' ');
         json_close(out, ctx);
     }
+    
+    void SingleOp::json(std::ostream& out, AST_print_context& ctx) {
+        json_head(opsym, out, ctx);
+        json_child("right_", right_, out, ctx);
+        json_close(out, ctx);
+    }
+    
+    void Classes::json(std::ostream& out, AST_print_context& ctx) {
+            json_head("Classes", out, ctx);
+            out << "\"clazzs_\" : [";
+            auto sep = "";
+            for (ASTNode *clazz: clazzs_) {
+                out << sep;
+                clazz->json(out, ctx);
+                sep = ", ";
+            }
+            out << "]";
+            json_close(out, ctx);
+    }
+    void Actuals::json(std::ostream& out, AST_print_context& ctx) {
+            json_head("Actuals", out, ctx);
+             out << "\"argus_\" : [";
+                auto sep = "";
+                for (ASTNode *argus: argus_) {
+                    out << sep;
+                    argus->json(out, ctx);
+                    sep = ", ";
+                }
+                out << "]";
+
+            json_close(out, ctx);
+    }
+    void Argus::json(std::ostream& out, AST_print_context& ctx) {
+            json_head("Argus", out, ctx);
+            json_child("var_name_", var_name_, out, ctx);
+            json_child("var_type_", var_type_, out, ctx);
+            json_close(out, ctx);
+    }
+    
+    void Class::json(std::ostream& out, AST_print_context& ctx) {
+            json_head("Class", out, ctx);
+            json_child("name_", name_, out, ctx);
+            json_child("inputs_args_", inputs_args_, out, ctx);
+            json_child("extends_", extends_, out, ctx);
+            json_child("blocks_", blocks_, out, ctx);
+            json_close(out, ctx);
+    }
+    
+    void Method::json(std::ostream& out, AST_print_context& ctx) {
+            json_head("Method", out, ctx);
+            json_child("name_", name_, out, ctx);
+            json_child("inputs_args_", inputs_args_, out, ctx);
+            json_child("type_", type_, out, ctx);
+            json_child("blocks_", blocks_, out, ctx);
+            json_close(out, ctx);
+    }
+    
+    void Method_call::json(std::ostream& out, AST_print_context& ctx) {
+            json_head("Method_call", out, ctx);
+            json_child("name_", name_, out, ctx);
+            json_child("inputs_args_", inputs_args_, out, ctx);
+            json_close(out, ctx);
+    }
+    
+    void Statement::json(std::ostream& out, AST_print_context& ctx) {
+            json_head("Statement", out, ctx);
+            json_child("stmt_", stmt_, out, ctx);
+            json_close(out, ctx);
+    }  
+    
+    void TypeCase::json(std::ostream& out, AST_print_context& ctx) {
+            json_head("TypeCase", out, ctx);
+            json_child("name_", name_, out, ctx);
+            json_child("block_", block_, out, ctx);
+            json_close(out, ctx);
+    }    
+    
+    void Return_opt::json(std::ostream& out, AST_print_context& ctx) {
+            json_head("Return_opt", out, ctx);
+            json_child("stmt_", stmt_, out, ctx);
+            json_close(out, ctx);
+    }
+    
+     void Dot::json(std::ostream& out, AST_print_context& ctx) {
+                json_head("Dot", out, ctx);
+                json_child("rexpr_", rexpr_, out, ctx);
+                json_child("ident_", ident_, out, ctx);
+                json_close(out, ctx);
+    }
+    
+    void TypeExtend::json(std::ostream& out, AST_print_context& ctx) {
+                json_head("TypeExtend", out, ctx);
+                json_child("lrexpr_", lexpr_, out, ctx);
+                json_child("type_", type_, out, ctx);
+                json_close(out, ctx);
+    }
+    
+    void Type_Alternatives::json(std::ostream& out, AST_print_context& ctx) {
+                json_head("Type_Alternatives", out, ctx);
+                json_child("name_", name_, out, ctx);
+                json_child("type_", type_, out, ctx);
+                json_child("block_", block_, out, ctx);
+                json_close(out, ctx);
+    }
+
 
 }

@@ -68,6 +68,7 @@ word  [a-zA-Z_]+_*[0-9a-zA-Z_]*
 ==    { return parser::token::EQUALS; }
 [<]=  { return parser::token::ATMOST; }
 [>]=  { return parser::token::ATLEAST; }
+[!]=  { return parser::token::NOT; }
 
 
   /* Single character punctuation.  Because a character
@@ -119,7 +120,7 @@ and { return parser::token::AND;}
    * be clobbered by subsequent calls. 
    */
 
-[0-9]+   { yylval.num = atoi(text());return parser::token::INT_LIT; }
+[-]?[0-9]+   { yylval.num = atoi(text());return parser::token::INT_LIT; }
 
   /* You *can* write a one-line regular expression for matching a quoted string,
   * but you probably can't read it.  (I can't read mine.)  Scanner states and

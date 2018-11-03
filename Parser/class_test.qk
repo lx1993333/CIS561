@@ -1,2 +1,12 @@
-	// Not a complete program --- just for testing scanner
-	"Escaped dot \. is not legal, nor escaped comma \, "
+/**
+ * A simple sample Quack program
+ */
+
+class Pt(x: Int, y: Int) extends Obj {
+	typecase other {
+		   pt: Point { return this.x == pt.x and this.y == pt.y; }
+		}
+		return false;
+}
+	
+

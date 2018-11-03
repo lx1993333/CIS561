@@ -36,6 +36,17 @@
 %union {
     int   num;
     char* str;
+    /* Abstract syntax tree values */
+    AST::ASTNode* node;  // Most general class
+    AST::Class* clazz;
+    AST::Ident* ident;   // Identifiers are used in many places
+    AST::LExpr* l_expr;
+    AST::Statement* statement;
+    // Alas, looks like we need a member per sequence type
+    AST::Method* method;
+    AST::Actuals* actuals;
+    AST::Block* block;
+    AST::Classes* classes;
 }
 
  // The following token values are actually used
@@ -49,97 +60,135 @@
 %token ATLEAST ATMOST EQUALS
 %token AND OR NOT NEG
 
+ // Abstract syntax tree nodes
+%type <l_expr> l_expr
+%type <statement> stmt
+%type <node> program r_expr type_case
+%type <classes> classes
+%type <block> block actual_args
+%type <block> stmt_block elif_stmt type_alternative
+%type <actuals> class_args 
+ //%type <formals> formals formals_nonempty
+ //%type <methods> methods
+ %type <method> method
+%type <node> if_stmt else_stmt 
+%type <clazz> class
+%type <ident> classExtends method_type
 
 %%
 
  /* Root of the grammar is "program".  A program
  * is a non-empty sequence of assignments or expressions.
  */
-program:  classes {}
-         |%empty {}
+program:  classes {*root = $1;}
+         |%empty { }
           ;
 
-classes:  class {}
-        | classes class {}
-        | classes stmt {}
+classes:  class {$$ = new AST::Classes();$$ ->append($1);}
+        | classes class {$1->append($2); $$ = $1;}
+        | classes stmt {$1->append($2); $$ = $1;}
         ;
 
-class: CLASS IDENT '('class_args')' '{' block '}' { }
-      | CLASS IDENT '('class_args')' EXTENDS IDENT '{' block '}' { }
-      ;
+class: CLASS IDENT '('class_args')' classExtends '{' block '}' { 
+                                                  AST::Ident* class_name = new AST::Ident($2);
+                                                  $$ = new AST::Class(*class_name,*$4,*$6,*$8);
+                                                  };
+
+classExtends: EXTENDS IDENT { $$ = new AST::Ident($2);}
+              | %empty      { $$ = new AST::Ident("");}
+              ;
 
  /* Standard recursive definition for a non-empty sequence. */
 
-class_args: IDENT ':' IDENT {}
-            |class_args','class_args { }
-            |%empty { }
+class_args: IDENT ':' IDENT { $$ = new AST::Actuals(); 
+                              AST::Ident* id1 = new AST::Ident($1); 
+                              AST::Ident* id2 = new AST::Ident($3); 
+                              $$->append(new AST::Argus(*id1,*id2));
+                            }
+            |class_args','IDENT ':' IDENT { $1->append(new AST::Argus(*new AST::Ident($3),*new AST::Ident($5))); $$ = $1;}
+            |%empty {$$ = new AST::Actuals();}
             ;
 
-block: stmt ';' block { }
-     | block block {}
-     | stmt {}
-     | DEF IDENT '('class_args')' ':' IDENT '{' stmt_block '}' { }
-     | DEF IDENT '('class_args')''{' stmt_block '}' { }
+block: block stmt { $1->append($2); $$ = $1;}
+     | stmt { $$ = new AST::Block(); $$->append($1);}
     ;
+    
+method: DEF IDENT '('class_args')' method_type '{' stmt_block '}' { AST::Ident* method_name = new AST::Ident($2);
+                                                                          $$ = new AST::Method(*method_name,*$4,*$6,*$8);
+                                                                  };
 
-stmt_block: stmt_block stmt { }
-     | stmt { }
-     | %empty
+method_type: ':' IDENT {$$ = new AST::Ident($2);}
+              | %empty {$$ = new AST::Ident("");}
+              ;
+
+stmt_block: stmt_block stmt {$1->append($2); $$ = $1;}
+     | stmt {$$ = new AST::Block(); $$->append($1);}
+     | %empty {$$ = new AST::Block();}
     ;
 
 stmt: %empty { }
-    |IDENT { }
-    |l_expr ':' IDENT '=' r_expr';' {}
-    |l_expr '=' r_expr';'
-    |r_expr';' { }
-    |RETURN r_expr ';' {}
-    |RETURN ';' {}
-    |if_stmt ELSE '{' stmt_block '}' {}
-    |if_stmt {}
-    |type_case {}
-    |WHILE '('r_expr')' '{' stmt_block'}' {}
+    |l_expr ':' IDENT '=' r_expr';' {$$ = new AST::Statement(*new AST::Assign(*new AST::TypeExtend(*$1,*new AST::Ident($3)), *$5));}
+    |l_expr '=' r_expr';' {$$ = new AST::Statement(*new AST::Assign(*$1, *$3));}
+    |r_expr';' { $$ = new AST::Statement(*$1);}
+    |RETURN r_expr ';' {$$ = new AST::Statement(*new AST::Return_opt(*$2));}
+    |RETURN ';' {$$ = new AST::Statement(*new AST::Return_opt(*new AST::Ident("")));}
+    |if_stmt { $$ = new AST::Statement(*$1);}
+    |type_case {$$ = new AST::Statement(*$1);}
+    |WHILE '('r_expr')' '{' stmt_block'}' {$$ = new AST::Statement(*new AST::While(*$3,*$6));}
+    |method {$$ = new AST::Statement(*$1);}
     ;
 
-l_expr: IDENT    {}
-        |r_expr '.' IDENT    {}
+l_expr: IDENT { $$ = new AST::Ident(std::string($1)); dump($$); }
+        |r_expr '.' IDENT {$$ = new AST::Dot(*$1,*new AST::Ident($3));}
         ;
 
-type_case: TYPECASE r_expr '{' type_alternative '}' {};
+type_case: TYPECASE r_expr '{' type_alternative '}' {$$ = new AST::TypeCase(*$2,*$4);};
 
-type_alternative: IDENT ':' IDENT '{' stmt_block '}'{}
-                | type_alternative type_alternative {}
-                | %empty {}
+type_alternative: IDENT ':' IDENT '{' stmt_block '}'{$$ = new AST::Block(); $$-> append(new AST::Type_Alternatives(*new AST::Ident($1),*new AST::Ident($3),*$5));}
+                | type_alternative IDENT ':' IDENT '{' stmt_block '}' {$1-> append(new AST::Type_Alternatives(*new AST::Ident($2),*new AST::Ident($4),*$6)); $$ = $1;}
+                | %empty {$$ = new AST::Block();}
                 ;
 
-if_stmt: IF r_expr '{' stmt_block '}' {}
-        | if_stmt ELIF r_expr '{'stmt_block'}'{}
-        ;
+if_stmt: IF r_expr '{' stmt_block '}' elif_stmt else_stmt {$$ = new AST::If(*$2, *$4, *$6);};
 
-actual_args: r_expr { }
-    | %empty    {}
-    | r_expr ',' r_expr   {}
+elif_stmt: ELIF r_expr '{'stmt_block'}' elif_stmt {$$ = new AST::Block(); AST::ASTNode *if_stm = new AST::If(*$2, *$4, *$6); $$->append(if_stm);}
+          | %empty {$$ = new AST::Block();}
+          ;
+else_stmt: ELSE '{' stmt_block '}' { $$ = $3;}
+          | %empty {$$ = new AST::Block();}
+          ;
+
+actual_args: r_expr {$$ = new AST::Block(); $$ ->append($1);}
+    | %empty    {$$ = new AST::Block();}
+    | actual_args ',' r_expr { $1->append($3); $$ = $1;}
     ;
     
-r_expr: INT_LIT  { }
-    | STRING_LIT {}
-    | l_expr {}
-    | r_expr '+' r_expr  {}
-    | r_expr '-' r_expr  {}
-    | r_expr '*' r_expr  {}
-    | r_expr '/' r_expr  {}
-    | r_expr '>' r_expr  {}
-    | r_expr '<' r_expr  {}
-    | r_expr ATLEAST r_expr  {}
-    | r_expr ATMOST r_expr  {}
-    | r_expr EQUALS r_expr {}
-    | r_expr AND r_expr {}
-    | r_expr OR r_expr {}
-    | r_expr NOT r_expr {}
+r_expr: l_expr { $$ = $1;}
+    | r_expr '+' r_expr  { $$ = new AST::Plus( *$1, *$3 ); dump($$);}
+    | r_expr '-' r_expr  { $$ = new AST::Minus( *$1, *$3 ); dump($$);}
+    | r_expr '*' r_expr  { $$ = new AST::Times( *$1, *$3 ); dump($$);}
+    | r_expr '/' r_expr  { $$ = new AST::Div( *$1, *$3 ); dump($$);}
+    | r_expr '>' r_expr  {$$ = new AST::Large( *$1, *$3 ); dump($$);}
+    | r_expr '<' r_expr  {$$ = new AST::Less( *$1, *$3 ); dump($$);}
+    | r_expr ATLEAST r_expr  {$$ = new AST::Atleast( *$1, *$3 ); dump($$);}
+    | r_expr ATMOST r_expr  {$$ = new AST::Atmost( *$1, *$3 ); dump($$);}
+    | r_expr EQUALS r_expr {$$ = new AST::Equals( *$1, *$3 ); dump($$);}
+    | r_expr AND r_expr {$$ = new AST::And( *$1, *$3 ); dump($$);}
+    | r_expr OR r_expr {$$ = new AST::Or( *$1, *$3 ); dump($$);}
+    | r_expr NOT r_expr {$$ = new AST::Not( *$1, *$3 ); dump($$);}
     | NEG r_expr {}
-    | IDENT '(' actual_args ')'  {}
-    | r_expr '.' IDENT '(' actual_args ')' {}
-    |'(' r_expr ')'  {}
+    | IDENT '(' actual_args ')'  {$$ = new AST::Method_call(*new AST::Ident($1),*$3);}
+    | r_expr '.' IDENT '(' actual_args ')' {$$ = new AST::Dot(*$1,*new AST::Method_call(*new AST::Ident($3),*$5));}
+    |'(' r_expr ')'  { $$ = $2; }
+    | INT_LIT {$$ = new AST::IntConst($1); dump($$);}
+    | STRING_LIT {$$ = new AST::Ident($1); dump($$);}
     ;
+    
+    
+  // leaf: IDENT  { $$ = new AST::Ident(std::string($1)); dump($$); }
+  //      |INT_LIT {$$ = new AST::IntConst($1); dump($$);}
+  //      |STRING_LIT {$$ = new AST::Ident(std::string($1)); dump($$);}
+  //      ;
 %%
 #include "Messages.h"
 

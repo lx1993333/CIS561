@@ -14,11 +14,11 @@ public:
        { root = nullptr; }
     ~Driver() { delete parser; }
     AST::ASTNode* parse() {
-        // parser->set_debug_level(1); // 0 = no debugging, 1 = full tracing
-        // std::cout << "Running parser\n";
+        parser->set_debug_level(0); // 0 = no debugging, 1 = full tracing
+        std::cout << "Running parser\n";
         int result = parser->parse();
         if (result == 0 && report::ok()) {  // 0 == success, 1 == failure
-            // std::cout << "Extracting result\n";
+            std::cout << "Extracting result\n";
             std::cout << "Parse Success!"<<endl;
             return root;
         } else {
@@ -41,10 +41,10 @@ int main()
         AST::AST_print_context context;
         root->json(std::cout, context);
         std::cout << std::endl;
-        // std::cout << "Successfully parsed " << root->str() << std::endl;
+        //std::cout << "Successfully parsed " << root->str() << std::endl;
         auto ctx = EvalContext();
-        //std::cout << "Evaluates to " << root->eval(ctx) << std::endl;
+        std::cout << "Evaluates to " << root->eval(ctx) << std::endl;
     } else {
-        //std::cout << "Extracted root was nullptr" << std::endl;
+        std::cout << "Extracted root was nullptr" << std::endl;
     }
 }

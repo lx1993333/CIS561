@@ -1,4 +1,4 @@
-# Json to Dot
+ # Json to Dot
 
 'Dot' is a little language for drawing directed graphs.  It is 
 the input language of the 'dot' program, which is part of the 
