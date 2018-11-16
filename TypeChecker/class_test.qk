@@ -1,0 +1,17 @@
+
+
+class Pt() {
+
+  def foo(x:Pt):Int{
+	this.y = 2;
+	}
+
+}
+
+class Bt() extends Pt{
+	
+}
+
+a = Bt();
+
+b = Pt().foo(a);

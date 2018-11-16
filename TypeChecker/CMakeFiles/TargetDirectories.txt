@@ -1,0 +1,4 @@
+/Users/xunliu/Desktop/CIS561 git/TypeChecker/CMakeFiles/rebuild_cache.dir
+/Users/xunliu/Desktop/CIS561 git/TypeChecker/CMakeFiles/edit_cache.dir
+/Users/xunliu/Desktop/CIS561 git/TypeChecker/CMakeFiles/test_ast.dir
+/Users/xunliu/Desktop/CIS561 git/TypeChecker/CMakeFiles/parser.dir
