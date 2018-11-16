@@ -1,3 +1,5 @@
+*** This is not a final version, still working on it ***
+
 #C++ (bison, re-flex) version of project 4, TypeChecker
 
 build instructions: 
