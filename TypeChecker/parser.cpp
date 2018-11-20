@@ -41,6 +41,7 @@ int main()
         std::cout << "Parsed!\n";
         AST::AST_print_context context;
         root->json(std::cout, context);
+        std::cout << "\n-------------Type Check-------------\n"<<std::endl;
         classes_traversal(root);
         std::cout << std::endl;
         auto ctx = EvalContext();

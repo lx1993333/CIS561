@@ -79,22 +79,7 @@ string Method_call_handler(AST::ASTNode* input,Scope* current_scope,string posit
 		else{
 			input_type = Method_RExpr_handler((*it),current_scope);
 		}
-		
-		
-//		if(global_scp->class_table->search_in_table(method_name)!= method_name){
-//			cout<<current_scope->scope_name<<endl;
-//			searching_scp = global_scp->search_in_sub_scope(global_scp->class_table->search_in_table(method_name))->next_scope[0];
-//		}
-//		else{
-//			if (current_scope->scope_name == "Class"){       //if current_scope is Class, that means we are searching for a class method. Thus need to go inside twice. 
-//				searching_scp = current_scope->next_scope[0]->next_scope[0];
-//			}
-//		
-//			else{
-//				searching_scp = global_scp->search_in_sub_scope(method_name)->next_scope[0];  //finding the function's block scope
-//			} 	
-//		}
-		
+				
 		if (current_scope->scope_name == "Class"){     //if current_scope is Class, that means we are searching for a class method. Thus need to go inside twice. 
 			searching_scp = current_scope->next_scope[0]->next_scope[0];
 		}
@@ -102,17 +87,7 @@ string Method_call_handler(AST::ASTNode* input,Scope* current_scope,string posit
 		else{
 			
 			searching_scp = global_scp->search_in_sub_scope(method_name)->next_scope[0];  //finding the function's block scope 
-		} 	
-		
-		//searching_scp = global_scp->search_in_sub_scope(method_name)->next_scope[0];  //finding the function's block scope
-		
-//		cout<<searching_scp->table->content[input_index].second<<endl;
-//		cout<<current_scope->search_in_scope(its->text_)<<endl;
-		
-//		cout<<current_scope->scope_name<<endl;
-//		cout<<searching_scp->table->content.size()<<endl;
-//		cout<<arg_block->stmts_.size()<<endl;
-		
+		} 			
 		if(searching_scp->table->content.size()!= arg_block->stmts_.size()){
 			std::cout<<"Type Check Error: The number of inputs of function "<< method_name << "() is not correct!"<<endl;
 			exit(1);
@@ -140,7 +115,7 @@ string Method_call_handler(AST::ASTNode* input,Scope* current_scope,string posit
 		searching_scp = searching_scp->next_scope[0]; // set searching_scp to Class scope
 	}
 	
-	if (searching_scp->search_in_scope(method_name) == "Type_Check_Error"){
+	if (searching_scp->search_in_scope(method_name) == "Type_Check_Error" && method_name != "Obj" ){   // Obj() is fine, sine it is a built-in function
 		std::cout<<"Method_call Type Error at: "<< method_name <<std::endl;
 		exit(1);
 	}
@@ -150,8 +125,12 @@ string Method_call_handler(AST::ASTNode* input,Scope* current_scope,string posit
 
 	if (position == "right"){    
 		        //if there is an method call inside Class scope, it must be a type eval.
-			
-			return searching_scp->search_in_scope(method_name);
+			if(method_name == "Obj"){ // Obj() returns an Obj
+				return "Obj";
+			}
+			else{
+				return searching_scp->search_in_scope(method_name);
+			}
 	}
 	else{
 		return method_name;
@@ -219,7 +198,7 @@ string RExpr_handler(AST::ASTNode* input,Scope* current_scope, string position){
 			AST::BinOp* inputs = static_cast<AST::BinOp*> (input);
 //			cout<<RExpr_handler(&(inputs->left_),current_scope,"right")<<endl;
 //			cout<<RExpr_handler(&(inputs->right_),current_scope,"right");
-			if (RExpr_handler(&(inputs->left_),current_scope,"right") == RExpr_handler(&(inputs->right_),current_scope,"right") && (RExpr_handler(&(inputs->left_),current_scope,"right") == "String") | (RExpr_handler(&(inputs->left_),current_scope,"right") == "Int")){
+			if (RExpr_handler(&(inputs->left_),current_scope,"right") == RExpr_handler(&(inputs->right_),current_scope,"right") | (RExpr_handler(&(inputs->left_),current_scope,"right") == "String") | (RExpr_handler(&(inputs->left_),current_scope,"right") == "Int")){
 				return  "Bool";
 			}
 		}
@@ -610,7 +589,6 @@ void classes_traversal(AST::ASTNode *root){
 	cout<<"\n------Class_table in Global scope-----\n"<<endl;
 	s1->class_table->print_table();
 	cout<<"--------------------------------------"<<endl;
-	std::cout << "\n-------------Type Check-------------\n"<<std::endl;
 	s1->print_sub_scope();
 }
 

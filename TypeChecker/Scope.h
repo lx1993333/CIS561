@@ -49,24 +49,26 @@ class Var_table{
 			}
 		}
 		
-		std::string hierarchy_search(std::string s, std::string target){
-			std::vector<std::pair<std::string,std::string> >:: iterator it;
-			if (s == target){
-				return s;
-			}
-			for (it = content.begin(); it != content.end();it++){
-				if (s != search_in_table(s)){
-					return hierarchy_search(search_in_table(s), target);
-				}
-				else{
-					if(s == target){
-						return s;
-					}
-					return "hierarchy_search failed";
-				}
-			}
-			return "hierarchy_search failed";
-		}
+//		std::string hierarchy_search(std::string s, std::string target){
+//			
+////	std::vector<std::pair<std::string,std::string> >:: iterator it;		
+////			if (s == target){
+////				return s;
+////			}
+////			
+////			for (it = content.begin(); it != content.end();it++){
+////				if (s != search_in_table(s)){
+////					return hierarchy_search(search_in_table(s), target);
+////				}
+////				else{
+////					if(s == target){
+////						return s;
+////					}
+////					return "hierarchy_search failed";
+////				}
+////			}
+////			return "hierarchy_search failed";
+//		}
 		
 		bool hierarchy_check(std::string s, std::string target){
 			std::vector<std::pair<std::string,std::string> >:: iterator it;
@@ -218,19 +220,41 @@ class Scope{
 		}
 		
 		
-		std::string find_lca(string type1, string type2){
+		std::string find_lca(std::string type1, std::string type2){
 			Scope* searching_scope = previous_scope;
 			while(searching_scope && searching_scope->scope_name != "Global"){
 				searching_scope = searching_scope->previous_scope;
 			}
 			Var_table* searching_table = searching_scope->class_table;
-			if(searching_table->hierarchy_search(type1,type2) != "hierarchy_search failed"){
-				return searching_table->hierarchy_search(type1,type2);
-			} 
-			else if (searching_table->hierarchy_search(type2,type1) != "hierarchy_search failed"){
-				return searching_table->hierarchy_search(type2,type1);
-			}	
-			return  "least common ancestor not found!";
+			
+			std::vector<std::string> type1_hierarchy;  			std::vector<std::string> type2_hierarchy;
+			
+			string search_type = type1;
+			while (search_type != "Obj"){   //put all type1's hierarchy type into a vector.
+				type1_hierarchy.push_back(search_type);
+				search_type = searching_table->search_in_table(search_type);
+			}
+			type1_hierarchy.push_back("Obj");
+			
+			search_type = type2;
+			while (search_type != "Obj"){   //put all type2's hierarchy type into a vector.
+				type2_hierarchy.push_back(search_type);
+				search_type = searching_table->search_in_table(search_type);
+			}
+			type2_hierarchy.push_back("Obj");
+			
+			
+			std::vector<std::string>:: iterator it1;
+			std::vector<std::string>:: iterator it2;
+			for (it1 = type1_hierarchy.begin(); it1 != type1_hierarchy.end();it1++){     //find if there is an overlap between type1 ans 2's hierarchy types, if there is , that overlaped type is the LCA.
+				for (it2 = type2_hierarchy.begin(); it2 != type2_hierarchy.end();it2++){
+					if ((*it1) == (*it2)){
+						return (*it1);
+					}
+				}
+			}
+			
+			return  "Obj";    // at least both scope has type "Obj" as LCA.
 		}
 		
 	
@@ -239,9 +263,6 @@ class Scope{
 			for (it = table->content.begin(); it != table->content.end();it++){
 				if (other->table->search_in_table((*it).first) != "Type_Check_Error"){  //if we can find there is a var with same name in other scope
 					string res = find_lca((*it).second,other->table->search_in_table((*it).first)); //found least common ancestor
-					if (res == "least common ancestor not found!"){
-						res = "Obj";
-					}
 					(*it).second = res;
 					(*(other->table->get_content((*it).first))).second = res;
 				}
