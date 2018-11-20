@@ -121,9 +121,9 @@ namespace AST {
     };
     
     class While : public ASTNode {
+    public:
         ASTNode &cond_; // The boolean expression to be evaluated
         Block &block_; // Execute this block if the condition is true
-    public:
         std::string node_name_ = "While";
         explicit While(ASTNode &cond, Block &block) :
             cond_{cond}, block_{block} { };

@@ -81,12 +81,12 @@
  * is a non-empty sequence of assignments or expressions.
  */
 program:  classes {*root = $1;}
-         |%empty {}
           ;
 
 classes:  class {$$ = new AST::Classes();$$ ->append($1);}
         | classes class {$1->append($2); $$ = $1;}
         | classes stmt {$1->append($2); $$ = $1;}
+        | %empty {$$ = new AST::Classes();}
         ;
 
 class: CLASS IDENT '('class_args')' classExtends '{' block '}' { 

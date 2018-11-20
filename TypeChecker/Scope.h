@@ -25,6 +25,20 @@ class Var_table{
 			return "Type_Check_Error";
 		}
 		
+		std::pair<std::string,std::string>* get_content(std::string s){
+			std::vector<std::pair<std::string,std::string> >:: iterator it;
+			for (it = content.begin(); it != content.end();it++){
+				if (it->first == s){
+					return &(*it);
+				}
+			}
+			
+			std::pair<std::string,std::string> p = make_pair("Type_Check_Error","Type_Check_Error");
+			std::pair<std::string,std::string>* res = &p;
+			return res;
+		}
+
+		
 		void delete_in_table(std::string s){
 			std::vector<std::pair<std::string,std::string> >:: iterator it;
 			for (it = content.begin(); it != content.end();it++){
@@ -35,14 +49,33 @@ class Var_table{
 			}
 		}
 		
-		bool hierarchy_search(std::string s, std::string target){
+		std::string hierarchy_search(std::string s, std::string target){
+			std::vector<std::pair<std::string,std::string> >:: iterator it;
+			if (s == target){
+				return s;
+			}
+			for (it = content.begin(); it != content.end();it++){
+				if (s != search_in_table(s)){
+					return hierarchy_search(search_in_table(s), target);
+				}
+				else{
+					if(s == target){
+						return s;
+					}
+					return "hierarchy_search failed";
+				}
+			}
+			return "hierarchy_search failed";
+		}
+		
+		bool hierarchy_check(std::string s, std::string target){
 			std::vector<std::pair<std::string,std::string> >:: iterator it;
 			if (s == target){
 				return true;
 			}
 			for (it = content.begin(); it != content.end();it++){
 				if (s != search_in_table(s)){
-					return hierarchy_search(search_in_table(s), target);
+					return hierarchy_check(search_in_table(s), target);
 				}
 				else{
 					if(s == target){
@@ -119,6 +152,7 @@ class Scope{
 			exit(1);
 		}
 		
+	
 		void add_to_scope(std::string s1, std::string s2){
 			std::pair<std::string, std::string> p = make_pair(s1,s2);
 			//override the existing type in table
@@ -134,6 +168,23 @@ class Scope{
 			}
 			table->content.push_back(p);
 		}
+		
+		
+		void add_to_class_scope(std::string s1, std::string s2){
+			std::pair<std::string, std::string> p = make_pair(s1,s2);
+			//override the existing type in table
+//			if (table->search_in_table(s1) != "Type_Check_Error"){
+//				table->delete_in_table(s1);
+//			}
+			if (table->search_in_table(s1) != "Type_Check_Error" && table->search_in_table(s1) != s2){
+				table->delete_in_table(s1);
+			}
+			if (table->search_in_table(s1) == s2){
+				return;
+			}
+			table->content.push_back(p);
+		}
+
 		
 		
 		void add_to_class_table(std::string s1, std::string s2){
@@ -165,6 +216,37 @@ class Scope{
 				}
 			}
 		}
+		
+		
+		std::string find_lca(string type1, string type2){
+			Scope* searching_scope = previous_scope;
+			while(searching_scope && searching_scope->scope_name != "Global"){
+				searching_scope = searching_scope->previous_scope;
+			}
+			Var_table* searching_table = searching_scope->class_table;
+			if(searching_table->hierarchy_search(type1,type2) != "hierarchy_search failed"){
+				return searching_table->hierarchy_search(type1,type2);
+			} 
+			else if (searching_table->hierarchy_search(type2,type1) != "hierarchy_search failed"){
+				return searching_table->hierarchy_search(type2,type1);
+			}	
+			return  "least common ancestor not found!";
+		}
+		
 	
+		bool scope_comnpare(Scope* other){
+			std::vector<std::pair<std::string,std::string> >:: iterator it;
+			for (it = table->content.begin(); it != table->content.end();it++){
+				if (other->table->search_in_table((*it).first) != "Type_Check_Error"){  //if we can find there is a var with same name in other scope
+					string res = find_lca((*it).second,other->table->search_in_table((*it).first)); //found least common ancestor
+					if (res == "least common ancestor not found!"){
+						res = "Obj";
+					}
+					(*it).second = res;
+					(*(other->table->get_content((*it).first))).second = res;
+				}
+			}
+			return true;
+		}
 };
 

@@ -68,6 +68,7 @@ string Method_call_handler(AST::ASTNode* input,Scope* current_scope,string posit
 		global_scp = global_scp->previous_scope;
 	}  // Go to global_scp
 
+	
 	for (it = arg_block->stmts_.begin();it != arg_block->stmts_.end();it++){
 		//evaluate the type of input.
 		string input_type;
@@ -94,12 +95,13 @@ string Method_call_handler(AST::ASTNode* input,Scope* current_scope,string posit
 //			} 	
 //		}
 		
-		if (current_scope->scope_name == "Class"){       //if current_scope is Class, that means we are searching for a class method. Thus need to go inside twice. 
+		if (current_scope->scope_name == "Class"){     //if current_scope is Class, that means we are searching for a class method. Thus need to go inside twice. 
 			searching_scp = current_scope->next_scope[0]->next_scope[0];
 		}
 				
 		else{
-			searching_scp = global_scp->search_in_sub_scope(method_name)->next_scope[0];  //finding the function's block scope
+			
+			searching_scp = global_scp->search_in_sub_scope(method_name)->next_scope[0];  //finding the function's block scope 
 		} 	
 		
 		//searching_scp = global_scp->search_in_sub_scope(method_name)->next_scope[0];  //finding the function's block scope
@@ -117,7 +119,7 @@ string Method_call_handler(AST::ASTNode* input,Scope* current_scope,string posit
 		}
 		
 		if(searching_scp->table->content[input_index].second != input_type){         //first check if the type of input_type is same with the name in searching_scp
-			if(!(global_scp->class_table->hierarchy_search(input_type,searching_scp->table->content[input_index].second))){ //check if there is a hierachy relation.
+			if(!(global_scp->class_table->hierarchy_check(input_type,searching_scp->table->content[input_index].second))){ //check if there is a hierachy relation.
 				std::cout<<"Method_call Type Error from "<< method_name << "() inside "<< current_scope->scope_name << " Scope. The inputs type don't match! "<<std::endl;
 				exit(1);
 			}
@@ -128,14 +130,14 @@ string Method_call_handler(AST::ASTNode* input,Scope* current_scope,string posit
 	
 	searching_scp = current_scope;
 	
-	
 	if (searching_scp->scope_name == "Global"){
 		searching_scp = searching_scp->search_in_sub_scope(method_name);
 	}
 	else{
-		while(searching_scp && searching_scp->scope_name != "Class"){
-			searching_scp = searching_scp->previous_scope;  //the previous_scope of 'this' is the class scope
+		while(searching_scp && searching_scp->scope_name != "Global"){
+			searching_scp = searching_scp->previous_scope;  //the previous_scope of 'this' is class scope
 		}
+		searching_scp = searching_scp->next_scope[0]; // set searching_scp to Class scope
 	}
 	
 	if (searching_scp->search_in_scope(method_name) == "Type_Check_Error"){
@@ -145,14 +147,17 @@ string Method_call_handler(AST::ASTNode* input,Scope* current_scope,string posit
 //	if (current_scope->scope_name == "Class_Block"){              //if there is an method call inside Class scope, it must be a type eval.
 //		return current_scope->search_in_scope(method_name);
 //	}
-	
-	if (position == "right"){              //if there is an method call inside Class scope, it must be a type eval.
+
+	if (position == "right"){    
+		        //if there is an method call inside Class scope, it must be a type eval.
+			
 			return searching_scp->search_in_scope(method_name);
 	}
 	else{
 		return method_name;
 	}
 }
+
 
 string RExpr_handler(AST::ASTNode* input,Scope* current_scope, string position){   //when position == "left" evaluate it as address, position == "left" evaluate it as value; 
 	if (input->return_type() == "Ident"){
@@ -194,9 +199,10 @@ string RExpr_handler(AST::ASTNode* input,Scope* current_scope, string position){
 			searching_scp = searching_scp->search_in_sub_scope(left_exp);
 		}
 		else{
-			while(searching_scp && searching_scp->scope_name != "Class"){
+			while(searching_scp && searching_scp->scope_name != "Global"){
 				searching_scp = searching_scp->previous_scope;  //the previous_scope of 'this' is the class scope
 			}
+			searching_scp = searching_scp->next_scope[0];  //set searching_scp to Class scope
 		}
 		
 		return RExpr_handler(&(inputs->ident_),searching_scp,"right");
@@ -211,9 +217,9 @@ string RExpr_handler(AST::ASTNode* input,Scope* current_scope, string position){
 	
 	else if (input->return_type() == "Logic_BinOp"){
 			AST::BinOp* inputs = static_cast<AST::BinOp*> (input);
-			cout<<RExpr_handler(&(inputs->left_),current_scope,"right")<<endl;
-			cout<<RExpr_handler(&(inputs->right_),current_scope,"right");
-			if (RExpr_handler(&(inputs->left_),current_scope,"right") == RExpr_handler(&(inputs->right_),current_scope,"right")){
+//			cout<<RExpr_handler(&(inputs->left_),current_scope,"right")<<endl;
+//			cout<<RExpr_handler(&(inputs->right_),current_scope,"right");
+			if (RExpr_handler(&(inputs->left_),current_scope,"right") == RExpr_handler(&(inputs->right_),current_scope,"right") && (RExpr_handler(&(inputs->left_),current_scope,"right") == "String") | (RExpr_handler(&(inputs->left_),current_scope,"right") == "Int")){
 				return  "Bool";
 			}
 		}
@@ -271,8 +277,7 @@ pair<string,string> Assign_handler(AST::ASTNode* input,Scope* current_scope){
 				
 				while(class_scp && class_scp->scope_name != "Class"){
 					class_scp = class_scp->previous_scope;  //the previous_scope of 'this' is the class scope
-				}
-							
+				}			
 				res = make_pair(dot_ident_str, RExpr_handler(&(inputs->rexpr_),current_scope,"right"));
 				class_scp->add_to_scope(res.first, res.second);	
 				
@@ -290,7 +295,8 @@ pair<string,string> Assign_handler(AST::ASTNode* input,Scope* current_scope){
 			exit(1);
 		}	
 	}
-	
+//	string l = LExpr_handler(&(inputs->lexpr_),current_scope);
+//	string r =  RExpr_handler(&(inputs->rexpr_),current_scope,"right");
 	res = make_pair(LExpr_handler(&(inputs->lexpr_),current_scope), RExpr_handler(&(inputs->rexpr_),current_scope,"right"));
 	if (res.second == "Type_Check_Error"){
 		std::cout<<"Type Error at: "<< res.first <<std::endl;
@@ -312,6 +318,7 @@ pair<string,string> Return_handler(AST::ASTNode* input, Scope* current_scope,str
 	}
 	
 //	Scope* class_scope = current_scope->previous_scope->previous_scope;  //go to the Class scope
+	//cout<<"return type == "<< searchine_scope->search_in_scope(func_name)<<endl;
 	if (ret_type != searchine_scope->search_in_scope(func_name)){
 		std::cout<<"Return Type Error of function: "<< func_name <<std::endl;
 		exit(1);
@@ -322,13 +329,116 @@ pair<string,string> Return_handler(AST::ASTNode* input, Scope* current_scope,str
 }
 
 
+
+pair<string,string> If_stmt_handler_switcher(AST::ASTNode* input, Scope* current_scope,string func_name){
+	pair<string,string> res;
+	if (input->return_type() == "Assign"){
+		res = Assign_handler(input,current_scope);
+	}
+	
+	if (input->return_type() == "Return_opt"){
+			res = Return_handler(input,current_scope,func_name);
+		}
+
+
+//	if (input->return_type() == "Method_call"){
+//		res = Method_call_handler(input,current_scope);
+//	}
+	return res;
+}
+
+
+Scope* If_block_traversal(AST::ASTNode *root,Scope* pre_scope,string name,string func_name){
+	AST::Block* inputs = static_cast<AST::Block*> (root);
+	Scope* s1= new Scope(pre_scope,name+"_Block");
+	pre_scope->next_scope.push_back(s1);
+	//add input argus into block's scope.
+	std::vector<AST::ASTNode*>::iterator it;
+	for (it = inputs->stmts_.begin();it != inputs->stmts_.end();it++){
+			AST::Statement* its = static_cast<AST::Statement*> (*it);
+			pair<string,string> res = If_stmt_handler_switcher(&(its->stmt_),s1,func_name);
+			if (res.first != "None"){
+				s1->add_to_scope(res.first, res.second);
+			}
+		}
+	return s1;
+	
+}
+
+pair<string,string> If_handler(AST::ASTNode* input,Scope* current_scope,string func_name){
+	AST::If* inputs = static_cast<AST::If*> (input);
+	if (RExpr_handler(&(inputs->cond_),current_scope, "right") != "Bool"){
+		std::cout<<"If condition Type Error"<<std::endl;
+		exit(1);
+	}
+
+	Scope* true_block_scope = If_block_traversal(&(inputs->truepart_),current_scope,"True",func_name);
+	Scope* false_block_scope = If_block_traversal(&(inputs->falsepart_),current_scope,"False",func_name);
+	
+	true_block_scope->scope_comnpare(false_block_scope);
+		
+	
+	return make_pair("None", "None");
+}
+
+
+pair<string,string> While_stmt_handler_switcher(AST::ASTNode* input, Scope* current_scope,string func_name){
+	pair<string,string> res;
+	if (input->return_type() == "Assign"){
+		res = Assign_handler(input,current_scope);
+	}
+	
+	if(input->return_type() == "If"){
+		res = If_handler(input,current_scope,func_name);
+	}
+	
+	if(input->return_type() == "Return_opt"){
+			res = Return_handler(input,current_scope,func_name);
+		}
+	
+//	if (input->return_type() == "Method_call"){
+//		res = Method_call_handler(input,current_scope);
+//	}
+	return res;
+}
+
+
+void While_block_traversal(AST::ASTNode *root,Scope* pre_scope,string func_name){
+	AST::Block* inputs = static_cast<AST::Block*> (root);
+	Scope* s1= new Scope(pre_scope,"While_Block");
+	pre_scope->next_scope.push_back(s1);
+	//add input argus into block's scope.
+	std::vector<AST::ASTNode*>::iterator it;
+	for (it = inputs->stmts_.begin();it != inputs->stmts_.end();it++){
+			AST::Statement* its = static_cast<AST::Statement*> (*it);
+			pair<string,string> res = While_stmt_handler_switcher(&(its->stmt_),s1,func_name);
+			if (res.first != "None"){
+				s1->add_to_scope(res.first, res.second);
+			}
+		}
+}
+
+
+
+pair<string,string> While_handler(AST::ASTNode* input,Scope* current_scope,string func_name){
+	AST::While* inputs = static_cast<AST::While*> (input);
+	if(RExpr_handler(&(inputs->cond_),current_scope,"right") != "Bool"){
+		std::cout<<"While Condition Type_Check_Error"<<std::endl;
+		exit(1);
+	}
+	While_block_traversal(&(inputs->block_),current_scope,func_name);
+	return make_pair("None", "None");
+	
+}
+
+
 pair<string,string> Method_handler(AST::ASTNode* input,Scope* current_scope){
 	Scope* s1= new Scope(current_scope,"Method");
 	current_scope->add_sub_scope(s1);
 	
 	AST::Method* inputs = static_cast<AST::Method*> (input);
 	pair<string,string> res;
-	current_scope->previous_scope->add_to_scope(inputs->name_.text_, inputs->type_.text_);
+	current_scope->previous_scope->add_to_class_scope(inputs->name_.text_, inputs->type_.text_);
 
 	
 	AST::Block* block = static_cast<AST::Block*> (&(inputs->blocks_));
@@ -351,9 +461,18 @@ pair<string,string> Method_handler(AST::ASTNode* input,Scope* current_scope){
 					res = Assign_handler(&(its->stmt_),s2);
 			}
 			
-			if (its->stmt_.return_type() == "Return_opt"){
+			else if (its->stmt_.return_type() == "Return_opt"){
 					res = Return_handler(&(its->stmt_),s2,inputs->name_.text_);
 			}
+			
+			else if (its->stmt_.return_type() == "While"){
+					res = While_handler(&(its->stmt_),s2,inputs->name_.text_);
+			}
+			
+			else if (its->stmt_.return_type() == "If"){
+					res = If_handler(&(its->stmt_),s2,inputs->name_.text_);
+			}
+			
 
 			if (res.second == "Type_Check_Error"){
 					std::cout<<"Type Error at: "<< res.first <<std::endl;
@@ -372,14 +491,23 @@ pair<string,string> Method_handler(AST::ASTNode* input,Scope* current_scope){
 }
 
 
-pair<string,string> If_stmt_handler_switcher(AST::ASTNode* input, Scope* current_scope){
+
+
+pair<string,string> node_handler_switcher(AST::ASTNode* input, Scope* current_scope,string func_name){
 	pair<string,string> res;
 	if (input->return_type() == "Assign"){
 		res = Assign_handler(input,current_scope);
 	}
 	
-	if (input->return_type() == "Method"){
+	else if (input->return_type() == "Method"){
 		res = Method_handler(input,current_scope);
+	}
+	
+	else if (input->return_type() == "If"){
+			res = If_handler(input,current_scope,func_name);
+		}
+	else if (input->return_type() == "While"){
+			res = While_handler(input,current_scope,func_name);
 	}
 	
 
@@ -390,59 +518,8 @@ pair<string,string> If_stmt_handler_switcher(AST::ASTNode* input, Scope* current
 }
 
 
-void If_block_traversal(AST::ASTNode *root,Scope* pre_scope,string name){
-	AST::Block* inputs = static_cast<AST::Block*> (root);
-	Scope* s1= new Scope(pre_scope,name+"_Block");
-	pre_scope->next_scope.push_back(s1);
-	//add input argus into block's scope.
-	std::vector<AST::ASTNode*>::iterator it;
-	for (it = inputs->stmts_.begin();it != inputs->stmts_.end();it++){
-			AST::Statement* its = static_cast<AST::Statement*> (*it);
-			pair<string,string> res = If_stmt_handler_switcher(&(its->stmt_),s1);
-			if (res.first != "None"){
-				s1->add_to_scope(res.first, res.second);
-			}
-		}
-}
 
-pair<string,string> If_handler(AST::ASTNode* input,Scope* current_scope){
-	AST::If* inputs = static_cast<AST::If*> (input);
-	if (RExpr_handler(&(inputs->cond_),current_scope, "right") != "Bool"){
-		std::cout<<"If condition Type Error"<<std::endl;
-		exit(1);
-	}
-
-	If_block_traversal(&(inputs->truepart_),current_scope,"True");
-	If_block_traversal(&(inputs->falsepart_),current_scope,"False");
-
-	
-	return make_pair("None", "None");
-}
-	
-pair<string,string> node_handler_switcher(AST::ASTNode* input, Scope* current_scope){
-	pair<string,string> res;
-	if (input->return_type() == "Assign"){
-		res = Assign_handler(input,current_scope);
-	}
-	
-	if (input->return_type() == "Method"){
-		res = Method_handler(input,current_scope);
-	}
-	
-	if (input->return_type() == "If"){
-			res = If_handler(input,current_scope);
-		}
-	
-
-//	if (input->return_type() == "Method_call"){
-//		res = Method_call_handler(input,current_scope);
-//	}
-	return res;
-}
-
-
-
-void block_traversal(AST::ASTNode *root,Scope* pre_scope,AST::Actuals* actuals){
+void block_traversal(AST::ASTNode *root,Scope* pre_scope,AST::Actuals* actuals,string func_name){
 	AST::Block* inputs = static_cast<AST::Block*> (root);
 	Scope* s1= new Scope(pre_scope,"Class_Block");
 	pre_scope->next_scope.push_back(s1);
@@ -455,7 +532,7 @@ void block_traversal(AST::ASTNode *root,Scope* pre_scope,AST::Actuals* actuals){
 	
 	for (it = inputs->stmts_.begin();it != inputs->stmts_.end();it++){
 			AST::Statement* its = static_cast<AST::Statement*> (*it);
-			pair<string,string> res = node_handler_switcher(&(its->stmt_),s1);
+			pair<string,string> res = node_handler_switcher(&(its->stmt_),s1,func_name);
 			if (res.first != "None"){
 				s1->add_to_scope(res.first, res.second);
 			}
@@ -467,7 +544,7 @@ void class_traversal(AST::Class *inputs,Scope* pre_scope,string extends){
 	Scope* s1= new Scope(pre_scope,"Class");
 	pre_scope->next_scope.push_back(s1);
 	
-	if (extends != "Nothing"){
+	if (extends != "Nothing" && extends != "Obj" && extends != "Int" && extends != "String"){
 		Scope* super_scope = pre_scope->search_in_sub_scope(extends);
 		vector<std::pair<std::string,std::string> >::iterator it;
 		Var_table t = *(super_scope->table);
@@ -479,13 +556,13 @@ void class_traversal(AST::Class *inputs,Scope* pre_scope,string extends){
 	//add input argus into class's sub scope//
 	AST::ASTNode* argus = &(inputs->inputs_args_);
 	AST::Actuals* actuals = static_cast<AST::Actuals*> (argus);
-	
+	string func_name = inputs->name_.text_;
 	
 	//add class name itself into class scope//
 	s1->add_to_scope(inputs->name_.text_,inputs->name_.text_);
 	
 	//s1->add_to_scope(root->extends_,"class_extends");  //need to fix
-	block_traversal(&(inputs->blocks_),s1,actuals);
+	block_traversal(&(inputs->blocks_),s1,actuals,func_name);
 	
 }
 
@@ -495,16 +572,25 @@ void classes_traversal(AST::ASTNode *root){
 	vector<AST::ASTNode*>::iterator it;
 	Scope* s1= new Scope("Global");
 	
+	//set up some pre-defined type into class_table
+	s1->class_table->content.push_back(make_pair("Obj","Obj"));
+	s1->class_table->content.push_back(make_pair("String","Obj"));
+	s1->class_table->content.push_back(make_pair("Int","Obj"));
+	
+	//set up some pre-defined type into Global scope
+	s1->add_to_scope("True", "Bool");
+	s1->add_to_scope("False", "Bool");
+		
 	for (it = inputs->clazzs_.begin();it != inputs->clazzs_.end();it++){
 		if ((*it)->return_type() == "Class"){
 			AST::Class* its = static_cast<AST::Class*> (*it);
 			s1->add_to_scope(its->name_.text_,its->name_.text_);
 			if(its->extends_.text_ == "Nothing"){
-				s1->add_to_class_table(its->name_.text_,its->name_.text_);
+				s1->add_to_class_table(its->name_.text_,"Obj");
 				
 			}
 			else{
-				if(s1->search_in_scope(its->extends_.text_) != "Type_Check_Error"){
+				if(s1->class_table->search_in_table(its->extends_.text_) != "Type_Check_Error"){
 					s1->add_to_class_table(its->name_.text_,its->extends_.text_);
 				}
 				else{
@@ -517,7 +603,7 @@ void classes_traversal(AST::ASTNode *root){
 		}
 		if ((*it)->return_type() == "Statement"){
 			AST::Statement* its = static_cast<AST::Statement*> (*it);
-			pair<string,string> res = node_handler_switcher(&(its->stmt_),s1);
+			pair<string,string> res = node_handler_switcher(&(its->stmt_),s1,"Global");
 			s1->add_to_scope(res.first, res.second);
 		}
 	}

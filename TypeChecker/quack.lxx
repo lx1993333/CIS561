@@ -57,7 +57,7 @@ std::string BAD_NL_STR =
 %x quote_str
 
 
-word  [a-zA-Z_]+_*[0-9a-zA-Z_]*
+word  [_]*[a-zA-Z_]+[_]*[0-9a-zA-Z_]*
 %%
 
   /* We start with some tokens that are not value-bearing,
@@ -155,7 +155,7 @@ and { return parser::token::AND;}
 <tri_quote_str>[^/] {;}
   
   /*single word as indentifier*/
-{word} {yylval.str = strdup(text());return parser::token::IDENT;}
+[_]*[a-zA-Z_]+[_]*[0-9a-zA-Z_]* {yylval.str = strdup(text());return parser::token::IDENT;}
 
 
 

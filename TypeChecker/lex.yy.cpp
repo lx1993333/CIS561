@@ -150,7 +150,7 @@ std::string BAD_NL_STR =
 
 int yy::Lexer::yylex(yy::parser::semantic_type& yylval)
 {
-  static const reflex::Pattern PATTERN_INITIAL("(?m)(==)|([<]=)|([>]=)|([!]=)|([*+\\x2d/])|([<>])|([\\x2e])|([=])|([\\x7b\\x7d])|([:;])|([()])|([,])|(class)|(def)|(extends)|(if)|(elif)|(else)|(while)|(return)|(typecase)|(and)|([\\x2d]?[0-9]+)|([\\x09\\x0a\\x20]*)|([/][\\x2a])|([/][/])|([\"])|([\"][\"][\"])|((?:[A-Z_a-z]+_*[0-9A-Z_a-z]*))|(.)");
+  static const reflex::Pattern PATTERN_INITIAL("(?m)(==)|([<]=)|([>]=)|([!]=)|([*+\\x2d/])|([<>])|([\\x2e])|([=])|([\\x7b\\x7d])|([:;])|([()])|([,])|(class)|(def)|(extends)|(if)|(elif)|(else)|(while)|(return)|(typecase)|(and)|([\\x2d]?[0-9]+)|([\\x09\\x0a\\x20]*)|([/][\\x2a])|([/][/])|([\"])|([\"][\"][\"])|([_]*[A-Z_a-z]+[_]*[0-9A-Z_a-z]*)|(.)");
   static const reflex::Pattern PATTERN_comment("(?m)([^\\x2a]*)|([\\x2a][^/])|([\\x2a][/])");
   static const reflex::Pattern PATTERN_s_comment("(?m)([\\x0a])|([^/])");
   static const reflex::Pattern PATTERN_d_quote_str("(?m)([\\x0a])|([\"])|([^/])");
@@ -348,7 +348,7 @@ int yy::Lexer::yylex(yy::parser::semantic_type& yylval)
 #line 153 "/Users/xunliu/Desktop/CIS561 git/TypeChecker/quack.lxx"
 {start(tri_quote_str);}
             break;
-          case 29: // rule at line 158: (?:[A-Z_a-z]+_*[0-9A-Z_a-z]*)
+          case 29: // rule at line 158: [_]*[A-Z_a-z]+[_]*[0-9A-Z_a-z]*
 #line 158 "/Users/xunliu/Desktop/CIS561 git/TypeChecker/quack.lxx"
 {yylval.str = strdup(text());return parser::token::IDENT;}
 

@@ -580,26 +580,26 @@ namespace yy {
     break;
 
   case 3:
-#line 84 "/Users/xunliu/Desktop/CIS561 git/TypeChecker/quack.yxx" // lalr1.cc:870
-    {}
+#line 86 "/Users/xunliu/Desktop/CIS561 git/TypeChecker/quack.yxx" // lalr1.cc:870
+    {(yylhs.value.classes) = new AST::Classes();(yylhs.value.classes) ->append((yystack_[0].value.clazz));}
 #line 586 "quack.tab.cxx" // lalr1.cc:870
     break;
 
   case 4:
 #line 87 "/Users/xunliu/Desktop/CIS561 git/TypeChecker/quack.yxx" // lalr1.cc:870
-    {(yylhs.value.classes) = new AST::Classes();(yylhs.value.classes) ->append((yystack_[0].value.clazz));}
+    {(yystack_[1].value.classes)->append((yystack_[0].value.clazz)); (yylhs.value.classes) = (yystack_[1].value.classes);}
 #line 592 "quack.tab.cxx" // lalr1.cc:870
     break;
 
   case 5:
 #line 88 "/Users/xunliu/Desktop/CIS561 git/TypeChecker/quack.yxx" // lalr1.cc:870
-    {(yystack_[1].value.classes)->append((yystack_[0].value.clazz)); (yylhs.value.classes) = (yystack_[1].value.classes);}
+    {(yystack_[1].value.classes)->append((yystack_[0].value.statement)); (yylhs.value.classes) = (yystack_[1].value.classes);}
 #line 598 "quack.tab.cxx" // lalr1.cc:870
     break;
 
   case 6:
 #line 89 "/Users/xunliu/Desktop/CIS561 git/TypeChecker/quack.yxx" // lalr1.cc:870
-    {(yystack_[1].value.classes)->append((yystack_[0].value.statement)); (yylhs.value.classes) = (yystack_[1].value.classes);}
+    {(yylhs.value.classes) = new AST::Classes();}
 #line 604 "quack.tab.cxx" // lalr1.cc:870
     break;
 
@@ -1150,8 +1150,8 @@ namespace yy {
   const unsigned char
   parser::yydefact_[] =
   {
-       3,     0,     0,     2,     4,     0,     1,    63,    32,    62,
-       0,     0,     0,     0,     0,     0,     0,     5,    31,     6,
+       6,     0,     0,     2,     3,     0,     1,    63,    32,    62,
+       0,     0,     0,     0,     0,     0,     0,     4,    31,     5,
       45,    29,    28,     0,    12,    43,    45,     0,     0,     0,
        0,    27,     0,    58,     0,     0,     0,     0,     0,     0,
        0,     0,     0,    25,     0,     0,     0,     0,     0,     0,
@@ -1314,7 +1314,7 @@ namespace yy {
   const unsigned char
   parser::yyr1_[] =
   {
-       0,    38,    39,    39,    40,    40,    40,    41,    42,    42,
+       0,    38,    39,    40,    40,    40,    40,    41,    42,    42,
       43,    43,    43,    44,    44,    44,    45,    46,    46,    47,
       47,    47,    48,    48,    48,    48,    48,    48,    48,    48,
       48,    48,    49,    49,    50,    51,    51,    51,    52,    52,
@@ -1326,7 +1326,7 @@ namespace yy {
   const unsigned char
   parser::yyr2_[] =
   {
-       0,     2,     1,     0,     1,     2,     2,     9,     2,     0,
+       0,     2,     1,     1,     2,     2,     0,     9,     2,     0,
        3,     5,     0,     2,     1,     0,     9,     2,     0,     2,
        1,     0,     0,     6,     4,     2,     3,     2,     1,     1,
        7,     1,     1,     3,     5,     6,     7,     0,    10,     6,
@@ -1356,7 +1356,7 @@ namespace yy {
   const unsigned char
   parser::yyrline_[] =
   {
-       0,    83,    83,    84,    87,    88,    89,    92,    97,    98,
+       0,    83,    83,    86,    87,    88,    89,    92,    97,    98,
      103,   108,   109,   112,   113,   114,   117,   121,   122,   125,
      126,   127,   130,   131,   132,   133,   134,   135,   136,   137,
      138,   139,   142,   143,   146,   148,   149,   150,   153,   154,

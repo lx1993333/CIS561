@@ -11,6 +11,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(REFLEX_LIB "/usr/local/lib/libreflex.a")
 set(REFLEX_INCLUDE "/usr/local/include/reflex")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
+set(CPLUS_INCLUDE_PATH "$CPLUS_INCLUDE_PATH:/usr/local/include")
 
 
 
