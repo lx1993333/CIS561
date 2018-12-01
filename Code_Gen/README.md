@@ -17,6 +17,9 @@ It don't support:
     2. Class member inheritance.
 
 
+*some test files are provided in sample folder.
+
+
 build instructions: 
 * Make sure the path lead to include/reflex was added in the enviroment. (for C++, use 'export CPLUS_INCLUDE_PATH="$CPLUS_INCLUDE_PATH:/usr/local/include"')
 * Use cmake to build and link files. Then use "Makefile" to build the program. (In shell environment(like terminal), run "make")
