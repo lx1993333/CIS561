@@ -2,7 +2,7 @@
 
 ************ Not final version, still working on it ****************
 Right now this generator supports Quack language with:
-    1.Class object initialization.\n
+    1.Class object initialization.
     2.Variables initialization.
     2.Controll flow(if statement/while loop).
     3.Dynamic dispathing.
