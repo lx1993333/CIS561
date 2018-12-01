@@ -1,6 +1,8 @@
 #C++ (bison, re-flex) version of project 5, Code Generator
 
 ************ Not final version, still working on it ****************
+
+
 Right now this generator supports Quack language with:
     1.Class object initialization.
     2.Variables initialization.
@@ -9,6 +11,7 @@ Right now this generator supports Quack language with:
     4.Class method call.
     5.Part of class inheritance.
     6.Class method overriding. 
+
 It don't support:
     1. Type case.
     2. Class member inheritance.
