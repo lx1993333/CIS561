@@ -1,0 +1,24 @@
+class Pt(x: Int, y: Int){
+     this.x = x;
+     this.y = y;
+      
+     def switcher():Int{
+            if this.x < 0 {
+                  return 0;
+            }
+            else{
+                  return this.x;
+            }
+      }
+      
+      def PLUS(other:Pt):Int{
+            return other.x +this.x;
+      }
+}
+
+c = Pt(1,2);
+b = Pt(13,42);
+a = 1+b.switcher()+b.PLUS(c);
+a.PRINT();
+
+

@@ -1,0 +1,116 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/ASTNode.h
+string
+-
+sstream
+-
+vector
+-
+CodegenContext.h
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/CodegenContext.h
+EvalContext.h
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/EvalContext.h
+
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/Code_gen.h
+iostream
+-
+fstream
+-
+ASTNode.h
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/ASTNode.h
+TypeChecker.h
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/TypeChecker.h
+
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/CodegenContext.h
+ostream
+-
+
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/EvalContext.h
+unordered_map
+-
+
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/Messages.h
+location.hh
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/location.hh
+string
+-
+
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/Scope.h
+iostream
+-
+vector
+-
+string
+-
+
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/TypeChecker.h
+iostream
+-
+Scope.h
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/Scope.h
+ASTNode.h
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/ASTNode.h
+
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/lex.yy.h
+quack.tab.hxx
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/quack.tab.hxx
+Messages.h
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/Messages.h
+reflex/matcher.h
+-
+reflex/abslexer.h
+-
+
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/location.hh
+position.hh
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/position.hh
+
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/parser.cpp
+lex.yy.h
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/lex.yy.h
+ASTNode.h
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/ASTNode.h
+EvalContext.h
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/EvalContext.h
+Messages.h
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/Messages.h
+Code_gen.h
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/Code_gen.h
+
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/position.hh
+algorithm
+-
+iostream
+-
+string
+-
+
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/quack.tab.hxx
+ASTNode.h
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/ASTNode.h
+cstdlib
+-
+iostream
+-
+stdexcept
+-
+string
+-
+vector
+-
+stack.hh
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/stack.hh
+location.hh
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/location.hh
+
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/stack.hh
+vector
+-
+

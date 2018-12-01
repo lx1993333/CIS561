@@ -1,0 +1,32 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/ASTNode.cpp
+ASTNode.h
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/ASTNode.h
+
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/ASTNode.h
+string
+-
+sstream
+-
+vector
+-
+CodegenContext.h
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/CodegenContext.h
+EvalContext.h
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/EvalContext.h
+
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/CodegenContext.h
+ostream
+-
+
+/Users/xunliu/Desktop/CIS561 git/Code_Gen/EvalContext.h
+unordered_map
+-
+
