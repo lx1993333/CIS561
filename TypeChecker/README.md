@@ -1,6 +1,6 @@
 #C++ (bison, re-flex) version of project 4, Type checker
 
-************ Not final version, still working on it ****************
+
 
 build instructions: 
 * Make sure the path lead to include/reflex was added in the enviroment. (for C++, use 'export CPLUS_INCLUDE_PATH="$CPLUS_INCLUDE_PATH:/usr/local/include"')
