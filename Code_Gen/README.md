@@ -1,8 +1,5 @@
 #C++ (bison, re-flex) version of project 5, Code Generator
 
-************ Not final version, still working on it ****************
-
-
 Right now this generator supports Quack language with:
     1.Class object initialization.
     2.Variables initialization.
